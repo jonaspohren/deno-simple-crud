@@ -10,7 +10,16 @@ const users = await db.createStore<User>('users');
 const server = serve({ port: parseInt(env.get('PORT') || '4000') });
 
 for await (const req of server) {
-  if (req.method === 'GET' && req.url.match(/\/user\/[0-9]+$/)) {
+  if (req.method === 'OPTIONS') {
+    req.respond({
+      status: 200,
+      headers: new Headers([
+        ['Access-Control-Allow-Origin', '*'],
+        ['Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'],
+        ['Access-Control-Allow-Headers', 'Content-Type']
+      ]),
+    });
+  } else if (req.method === 'GET' && req.url.match(/\/user\/[0-9]+$/)) {
     const id = parseInt((req.url.match(/(?<=\/)[0-9]+$/) || [])[0]);
 
     req.respond({
